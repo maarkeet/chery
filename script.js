@@ -1,9 +1,12 @@
-/* Contact and shipping options are public store settings loaded from Supabase. */
+/* Public contact options are loaded from Supabase. */
+const normalizeWhatsApp = value => {
+  const digits=String(value||"").replace(/\D/g,"");
+  return digits.startsWith("0")?`20${digits.slice(1)}`:digits;
+};
 const CONFIG = {
-  whatsapp:String(window.STORE_SETTINGS?.display?.whatsapp||"").replace(/\D/g,""),
-  phoneShown:String(window.STORE_SETTINGS?.display?.phone||""),
-  currency:"ج.م", perPage:24,
-  freeShip:Math.max(0,Number(window.STORE_SETTINGS?.display?.freeShipping)||0)
+  whatsapp:normalizeWhatsApp(window.STORE_SETTINGS?.display?.whatsapp||"201224906360"),
+  phoneShown:String(window.STORE_SETTINGS?.display?.phone||"01224906360"),
+  currency:"ج.م", perPage:24
 };
 
 /* أيقونات مرسومة SVG (بدل الإيموجي) */
@@ -124,15 +127,17 @@ function add(id,qty=1,src){
 function drawCart(){
   const n=cart.reduce((s,i)=>s+i.qty,0), t=cart.reduce((s,i)=>s+i.qty*i.price,0);
   $("#cartCount").textContent=n;$("#cartTotal").textContent=money(t)+" "+CONFIG.currency;
-  const left=CONFIG.freeShip-t,ship=CONFIG.freeShip&&cart.length?`<div class="ship">${left>0?`فاضل ${money(left)} ${CONFIG.currency} وتوصلي للشحن المجاني`:"مبروك! طلبك وصل للشحن المجاني"}<i style="--p:${Math.min(100,t/CONFIG.freeShip*100)}%"></i></div>`:"";
-  $("#cartItems").innerHTML=ship+(cart.length?cart.map(i=>`<div class="line"><div><b>${esc(i.name)}</b><small>${i.variantName?esc(i.variantName)+" • ":""}${i.size?"مقاس "+esc(i.size)+" • ":""}${money(i.price)} ${CONFIG.currency}</small>
-   <div class="qty"><button data-q="-1" data-k="${esc(i.key)}">−</button>${i.qty}<button data-q="1" data-k="${esc(i.key)}">+</button></div></div><button class="rm" data-rm="${esc(i.key)}">حذف</button></div>`).join(""):`<div class="empty">السلة فاضية. ابدئي بإضافة منتج.</div>`);
+  $("#cartItems").innerHTML=cart.length?cart.map(i=>`<div class="line"><div><b>${esc(i.name)}</b><small>${i.variantName?esc(i.variantName)+" • ":""}${i.size?"مقاس "+esc(i.size)+" • ":""}${money(i.price)} ${CONFIG.currency}</small>
+   <div class="qty"><button data-q="-1" data-k="${esc(i.key)}">−</button>${i.qty}<button data-q="1" data-k="${esc(i.key)}">+</button></div></div><button class="rm" data-rm="${esc(i.key)}">حذف</button></div>`).join(""):`<div class="empty">السلة فاضية. ابدئي بإضافة منتج.</div>`;
 }
 const open=o=>{$("#drawer").classList.toggle("on",o);$("#overlay").classList.toggle("on",o)};
 async function checkout(){
   if(!cart.length)return toast("السلة فاضية");
   const nm=$("#custName").value.trim(),ph=$("#custPhone").value.trim(),ad=$("#custAddr").value.trim();
   if(!nm||!ph||!ad)return toast("املي الاسم والموبايل والعنوان");
+  if(nm.length<2||nm.length>120||ph.length<8||ph.length>32||ad.length<8||ad.length>500){
+    return toast("راجعي طول الاسم ورقم الموبايل والعنوان");
+  }
   if(!window.STORE_SUPABASE)return toast("الاتصال بقاعدة البيانات غير متاح");
   const orderItems=cart.map(item=>({...item}));
   const button=$("#checkout");
@@ -190,13 +195,16 @@ build();render();drawCart();
 $("#featured").innerHTML=PRODUCTS.filter(p=>p.price>=100&&p.cat!=="ملابس الأطفال").sort((a,b)=>(a.id*7919)%97-(b.id*7919)%97).slice(0,10).map(card).join("");
 if(CONFIG.whatsapp){
   const wa=`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent("أهلاً شيري مامي، عندي استفسار")}`;
-  ["#waBanner","#waFloat","#footWa"].forEach(s=>$(s).href=wa);
+  ["#waBanner","#waFloat","#footWa","#aboutWa"].forEach(s=>$(s).href=wa);
 }else{
-  ["#waBanner","#waFloat","#footWa"].forEach(s=>$(s).hidden=true);
+  ["#waBanner","#waFloat","#footWa","#aboutWa"].forEach(s=>$(s).hidden=true);
 }
 $("#footPhone").textContent=CONFIG.phoneShown;
-if(CONFIG.phoneShown)$("#footPhone").href="tel:"+CONFIG.phoneShown;
-else $("#footPhone").parentElement.hidden=true;
+const phoneDigits=CONFIG.phoneShown.replace(/\D/g,"");
+if(phoneDigits){
+  const telNumber=phoneDigits.startsWith("0")?`+20${phoneDigits.slice(1)}`:phoneDigits.startsWith("20")?`+${phoneDigits}`:`+${phoneDigits}`;
+  $("#footPhone").href="tel:"+telNumber;
+}else $("#footPhone").parentElement.hidden=true;
 $("#yr").textContent=new Date().getFullYear();
 
 /* ================= V3: wow layer ================= */

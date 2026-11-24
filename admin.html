@@ -191,7 +191,7 @@
                             <div class="flex items-center justify-between text-xs"><span class="text-white/65">البيانات المحفوظة</span><span id="save-status">Supabase</span></div>
                             <div class="h-2 bg-white/10 rounded-full overflow-hidden"><div id="storage-bar" class="h-full w-0 rounded-full bg-admin-rose transition-all"></div></div>
                         </div>
-                        <a href="index.html" target="_blank" class="mt-7 block text-center py-3 rounded-2xl bg-white text-admin-ink text-xs font-bold">معاينة المتجر ↗</a>
+                        <a href="index.html" target="_blank" rel="noopener noreferrer" class="mt-7 block text-center py-3 rounded-2xl bg-white text-admin-ink text-xs font-bold">معاينة المتجر ↗</a>
                     </article>
                 </div>
             </section>
@@ -233,7 +233,7 @@
                     <div class="px-5 py-4 border-b border-admin-line flex items-center justify-between gap-3">
                         <div>
                             <h2 class="font-bold">طلبات العملاء</h2>
-                            <p class="text-[11px] text-admin-ink/45 mt-0.5">طلبات الدفع عند الاستلام المحفوظة في Supabase</p>
+                            <p class="text-[11px] text-admin-ink/45 mt-0.5">الطلبات المسجلة في Supabase</p>
                         </div>
                         <button id="refresh-orders" type="button" class="px-4 py-2 rounded-xl border border-admin-line text-xs font-bold">تحديث</button>
                     </div>
@@ -281,7 +281,7 @@
                         <h2 class="font-bold">شريط الإعلانات</h2>
                         <p class="text-xs text-admin-ink/45 mt-1 mb-5">الرسائل تظهر أعلى الصفحة الرئيسية بالتسلسل.</p>
                         <form id="announcement-form" class="flex gap-2">
-                            <input id="new-announcement" required placeholder="مثال: توصيل مجاني للطلبات فوق 1500 جنيه" class="field flex-1">
+                            <input id="new-announcement" required maxlength="160" placeholder="اكتبي رسالة قصيرة للعميلات" class="field flex-1">
                             <button type="submit" class="shrink-0 px-5 rounded-xl bg-admin-ink text-white text-xs font-bold">إضافة</button>
                         </form>
                         <div id="announcements-list" class="mt-4 space-y-2"></div>
@@ -295,9 +295,8 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div><label class="text-xs font-bold block mb-1.5">عنوان قسم المنتجات</label><input id="set-shop-heading" class="field"></div>
                         <div><label class="text-xs font-bold block mb-1.5">وصف البانر الرئيسي</label><input id="set-hero-subtitle" class="field"></div>
-                        <div><label class="text-xs font-bold block mb-1.5">رقم واتساب مع كود الدولة</label><input id="set-store-whatsapp" inputmode="tel" class="field" placeholder="201xxxxxxxxx"></div>
-                        <div><label class="text-xs font-bold block mb-1.5">رقم الهاتف المعروض</label><input id="set-store-phone" inputmode="tel" class="field" placeholder="01xxxxxxxxx"></div>
-                        <div><label class="text-xs font-bold block mb-1.5">حد الشحن المجاني بالجنيه (0 لإخفائه)</label><input id="set-free-shipping" type="number" min="0" step="1" class="field" value="0"></div>
+                        <div><label class="text-xs font-bold block mb-1.5">رقم واتساب مع كود الدولة</label><input id="set-store-whatsapp" inputmode="tel" maxlength="16" class="field" placeholder="201224906360"></div>
+                        <div><label class="text-xs font-bold block mb-1.5">رقم الهاتف المعروض</label><input id="set-store-phone" inputmode="tel" maxlength="32" class="field" placeholder="01224906360"></div>
                     </div>
                     <div class="grid grid-cols-1 gap-3">
                         <label class="toggle-card flex items-center justify-between gap-3 border border-admin-line rounded-2xl p-4"><span class="text-xs font-bold">شارات العروض</span><input type="checkbox" id="toggle-badges" class="accent-admin-rose"></label>
@@ -385,7 +384,7 @@
                 <section class="bg-white border border-admin-line rounded-[20px] p-4 space-y-4">
                     <h3 class="text-sm font-bold">صورة المنتج</h3>
                     <div><label class="text-xs font-bold block mb-1.5">رابط الصورة</label><input id="prod-img" type="url" class="field" placeholder="https://..."></div>
-                    <div id="image-preview" class="hidden h-44 rounded-2xl border border-admin-line bg-white overflow-hidden"><img id="image-preview-img" src="./cherie-mommy-logo.jpg" onerror="useProductImageFallback(this)" alt="معاينة صورة المنتج" class="w-full h-full object-contain p-2"></div>
+                    <div id="image-preview" class="hidden h-44 rounded-2xl border border-admin-line bg-white overflow-hidden"><img id="image-preview-img" src="./cherie-mommy-logo.jpg" alt="معاينة صورة المنتج" class="admin-product-image w-full h-full object-contain p-2"></div>
                 </section>
                 <label class="flex items-center gap-3 bg-white border border-admin-line rounded-2xl p-4 cursor-pointer">
                     <input id="prod-active" type="checkbox" checked class="accent-admin-rose w-4 h-4">
@@ -418,29 +417,46 @@
                 !imageUrl.includes('cherie-mommy-logo.jpg');
         }
 
+        function isSafeProductImageUrl(imageUrl) {
+            if (typeof imageUrl !== 'string' || !imageUrl.trim()) return false;
+            const value = imageUrl.trim();
+            return /^https:\/\/\S+$/i.test(value) || /^(?:\.\/|\/(?!\/))[^\s\\]*$/.test(value);
+        }
+
         function productImageUrl(imageUrl) {
-            return hasProductImage(imageUrl) ? imageUrl : PRODUCT_IMAGE_FALLBACK;
+            return hasProductImage(imageUrl) && isSafeProductImageUrl(imageUrl)
+                ? imageUrl.trim()
+                : PRODUCT_IMAGE_FALLBACK;
         }
 
         function useProductImageFallback(image) {
-            image.onerror = null;
+            if (image.dataset.fallbackApplied === 'true') {
+                image.removeAttribute('src');
+                return;
+            }
+            image.dataset.fallbackApplied = 'true';
             image.src = PRODUCT_IMAGE_FALLBACK;
             image.classList.remove('object-cover');
             image.classList.add('object-contain', 'p-1');
         }
+
+        document.addEventListener('error', event => {
+            if (event.target instanceof HTMLImageElement && event.target.classList.contains('admin-product-image')) {
+                useProductImageFallback(event.target);
+            }
+        }, true);
         let defaultCategories = [{ slug: 'all', name: 'الكل' }];
         let defaultAnnouncements = [
-            '💵 الدفع كاش عند الاستلام',
-            '🚚 توصيل لكل محافظات مصر',
-            '🌸 قطن طبيعي ناعم على بشرتك'
+            '🌸 قطن طبيعي ناعم على بشرتك',
+            '🍒 اهتمام بالتفاصيل وحب في كل اختيار',
+            '🤍 اختاري اللي يناسبك من شيري مامي'
         ];
         let defaultDisplaySettings = {
             shopHeading: 'تشكيلة شيري مامي',
             heroSubtitle: 'وجهتك المتكاملة لكل مستلزمات الأم والبيبي من أول يوم 👶🏻',
             showBadges: true,
-            whatsapp: '',
-            phone: '',
-            freeShipping: 0
+            whatsapp: '201224906360',
+            phone: '01224906360'
         };
 
         let catalog = [];
@@ -565,12 +581,18 @@
                 }))
                 : [...defaultCategories];
             const settings = Object.fromEntries(settingsResult.data.map(setting => [setting.key, setting.value]));
-            announcements = Array.isArray(settings.announcements) && settings.announcements.length
-                ? settings.announcements
-                : [...defaultAnnouncements];
+            announcements = Array.isArray(settings.announcements)
+                ? settings.announcements.map(String).filter(text => !/(?:شحن|توصيل|استلام|shipping|delivery)/i.test(text))
+                : [];
+            if (!announcements.length) announcements = [...defaultAnnouncements];
             displaySettings = { ...defaultDisplaySettings, ...(settings.display || {}) };
-            if (displaySettings.heroSubtitle === 'قطن ناعم للأم في كل مراحلها، من يومها العادي لحد أول حضن لبيبيها. وتوصيل لحد باب البيت في كل مصر.') {
+            displaySettings.whatsapp = displaySettings.whatsapp || defaultDisplaySettings.whatsapp;
+            displaySettings.phone = displaySettings.phone || defaultDisplaySettings.phone;
+            delete displaySettings.freeShipping;
+            if (/(?:شحن|توصيل|استلام|shipping|delivery)/i.test(displaySettings.heroSubtitle) ||
+                /(?:شحن|توصيل|استلام|shipping|delivery)/i.test(displaySettings.shopHeading)) {
                 displaySettings.heroSubtitle = defaultDisplaySettings.heroSubtitle;
+                displaySettings.shopHeading = defaultDisplaySettings.shopHeading;
             }
             orders = ordersResult.data;
             document.getElementById('save-status').textContent = 'متصل بـ Supabase';
@@ -666,8 +688,8 @@
             new: 'جديد',
             confirmed: 'تم التأكيد',
             preparing: 'قيد التجهيز',
-            shipped: 'تم الشحن',
-            delivered: 'تم التسليم',
+            shipped: 'تم التنفيذ',
+            delivered: 'مكتمل',
             cancelled: 'ملغي'
         };
 
@@ -753,7 +775,7 @@
 
             document.getElementById('overview-products').innerHTML = catalog.length ? catalog.slice(0, 6).map(p => `
                 <div class="px-5 py-3.5 flex items-center gap-3">
-                    <img src="${productImageUrl(p.variants?.[0]?.img)}" onerror="useProductImageFallback(this)" class="w-12 h-14 rounded-xl ${hasProductImage(p.variants?.[0]?.img) ? 'object-cover' : 'object-contain p-1'} bg-admin-cream">
+                    <img src="${escapeHtml(productImageUrl(p.variants?.[0]?.img))}" class="admin-product-image w-12 h-14 rounded-xl ${hasProductImage(p.variants?.[0]?.img) ? 'object-cover' : 'object-contain p-1'} bg-admin-cream">
                     <div class="min-w-0 flex-1"><p class="text-xs font-bold truncate">${escapeHtml(p.title)}</p><p class="text-[10px] text-admin-ink/45 mt-1">${escapeHtml(categoryName(p.category))}</p></div>
                     <div class="text-left"><p class="text-xs font-bold text-admin-rose">LE ${Number(p.price).toLocaleString()}</p><p class="text-[10px] text-admin-ink/45 mt-1">${p.stock || 0} ${escapeHtml(p.unit || 'قطعة')}</p></div>
                 </div>`).join('') : '<div class="px-5 py-12 text-center text-xs text-admin-ink/45">لا توجد منتجات مضافة بعد</div>';
@@ -786,7 +808,7 @@
             document.getElementById('product-result-count').textContent = filtered.length + ' منتج';
             document.getElementById('products-table-body').innerHTML = filtered.length ? filtered.map(p => `
                 <tr class="hover:bg-[#FCFBFD]">
-                    <td class="px-5 py-3.5"><div class="flex items-center gap-3"><img src="${productImageUrl(p.variants?.[0]?.img)}" onerror="useProductImageFallback(this)" class="w-11 h-12 rounded-xl ${hasProductImage(p.variants?.[0]?.img) ? 'object-cover' : 'object-contain p-1'}"><div class="min-w-0"><p class="font-bold text-xs truncate max-w-[230px]">${escapeHtml(p.title)}</p><p class="text-[10px] text-admin-ink/45 mt-1">${escapeHtml(p.vendor || 'Cherie Mommy')}</p></div></div></td>
+                    <td class="px-5 py-3.5"><div class="flex items-center gap-3"><img src="${escapeHtml(productImageUrl(p.variants?.[0]?.img))}" class="admin-product-image w-11 h-12 rounded-xl ${hasProductImage(p.variants?.[0]?.img) ? 'object-cover' : 'object-contain p-1'}"><div class="min-w-0"><p class="font-bold text-xs truncate max-w-[230px]">${escapeHtml(p.title)}</p><p class="text-[10px] text-admin-ink/45 mt-1">${escapeHtml(p.vendor || 'Cherie Mommy')}</p></div></div></td>
                     <td class="px-4 py-3.5"><span class="text-[11px] bg-admin-cream px-2.5 py-1 rounded-full">${escapeHtml(categoryName(p.category))}</span></td>
                     <td class="px-4 py-3.5 text-xs">${escapeHtml(p.unit || 'قطعة')}</td>
                     <td class="px-4 py-3.5 text-xs">${Number(p.unitFactor ?? 1).toLocaleString()}</td>
@@ -830,7 +852,6 @@
             document.getElementById('set-hero-subtitle').value = displaySettings.heroSubtitle;
             document.getElementById('set-store-whatsapp').value = displaySettings.whatsapp || '';
             document.getElementById('set-store-phone').value = displaySettings.phone || '';
-            document.getElementById('set-free-shipping').value = Number(displaySettings.freeShipping) || 0;
             document.getElementById('toggle-badges').checked = displaySettings.showBadges;
         }
 
@@ -930,7 +951,7 @@
             const preview = document.getElementById('image-preview');
             const image = document.getElementById('image-preview-img');
             preview.classList.remove('hidden');
-            image.onerror = () => useProductImageFallback(image);
+            image.dataset.fallbackApplied = 'false';
             image.src = productImageUrl(url);
         }
 
@@ -961,6 +982,9 @@
                 hex: document.getElementById('prod-color-hex').value,
                 img: document.getElementById('prod-img').value.trim()
             };
+            if (variant.img && !isSafeProductImageUrl(variant.img)) {
+                return notify('رابط الصورة يجب أن يبدأ بـ HTTPS أو يكون مسارًا محليًا داخل الموقع.');
+            }
             const productData = {
                 title,
                 titleEn: document.getElementById('prod-title-en').value.trim() || title,
@@ -1042,6 +1066,7 @@
             const input = document.getElementById('new-announcement');
             const text = input.value.trim();
             if (!text) return;
+            if (/(?:شحن|توصيل|استلام|shipping|delivery)/i.test(text)) return notify('اكتبي رسالة عن المنتجات أو البراند.');
             announcements.push(text);
             if (!await persist()) return;
             input.value = '';
@@ -1063,9 +1088,9 @@
             displaySettings.heroSubtitle = document.getElementById('set-hero-subtitle').value.trim() || defaultDisplaySettings.heroSubtitle;
             displaySettings.whatsapp = document.getElementById('set-store-whatsapp').value.replace(/\D/g, '');
             displaySettings.phone = document.getElementById('set-store-phone').value.trim();
-            displaySettings.freeShipping = Number(document.getElementById('set-free-shipping').value);
-            if (!Number.isFinite(displaySettings.freeShipping) || displaySettings.freeShipping < 0) {
-                return notify('أدخلي حد شحن مجاني صحيحًا أو 0 لإخفائه');
+            if (/(?:شحن|توصيل|استلام|shipping|delivery)/i.test(displaySettings.shopHeading) ||
+                /(?:شحن|توصيل|استلام|shipping|delivery)/i.test(displaySettings.heroSubtitle)) {
+                return notify('راجعي عنوان ووصف المتجر قبل الحفظ.');
             }
             displaySettings.showBadges = document.getElementById('toggle-badges').checked;
             if (!await persist()) return;
@@ -1103,6 +1128,7 @@
                 categories = imported.categories;
                 announcements = Array.isArray(imported.announcements) ? imported.announcements : [...defaultAnnouncements];
                 displaySettings = { ...defaultDisplaySettings, ...(imported.display || {}) };
+                delete displaySettings.freeShipping;
                 if (!await persist()) return;
                 refreshAll();
                 notify('تم استيراد النسخة بنجاح');

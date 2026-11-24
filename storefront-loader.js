@@ -52,11 +52,23 @@
             (settingsResult.data || []).map(setting => [setting.key, setting.value])
         );
         const display = settings.display && typeof settings.display === 'object' ? settings.display : {};
-        if (display.heroSubtitle === 'قطن ناعم للأم في كل مراحلها، من يومها العادي لحد أول حضن لبيبيها. وتوصيل لحد باب البيت في كل مصر.') {
+        display.whatsapp = display.whatsapp || '201224906360';
+        display.phone = display.phone || '01224906360';
+        const unavailableServiceCopy = /(?:شحن|توصيل|استلام|shipping|delivery)/i;
+        if (unavailableServiceCopy.test(display.heroSubtitle || '') ||
+            unavailableServiceCopy.test(display.shopHeading || '')) {
             display.heroSubtitle = 'وجهتك المتكاملة لكل مستلزمات الأم والبيبي من أول يوم 👶🏻';
+            display.shopHeading = 'تشكيلة شيري مامي';
         }
+        const announcements = Array.isArray(settings.announcements)
+            ? settings.announcements.map(String).filter(text => !unavailableServiceCopy.test(text))
+            : [];
         window.STORE_SETTINGS = {
-            announcements: Array.isArray(settings.announcements) ? settings.announcements : [],
+            announcements: announcements.length ? announcements : [
+                '🌸 قطن طبيعي ناعم على بشرتك',
+                '🍒 اهتمام بالتفاصيل وحب في كل اختيار',
+                '🤍 اختاري اللي يناسبك من شيري مامي'
+            ],
             display
         };
 

@@ -45,8 +45,8 @@ create table if not exists public.store_settings (
 
 insert into public.store_settings (key, value)
 values
-    ('announcements', '["💵 الدفع كاش عند الاستلام","🚚 توصيل لكل محافظات مصر","🌸 قطن طبيعي ناعم على بشرتك"]'::jsonb),
-    ('display', '{"shopHeading":"تشكيلة شيري مامي","heroSubtitle":"وجهتك المتكاملة لكل مستلزمات الأم والبيبي من أول يوم 👶🏻","showBadges":true}'::jsonb)
+    ('announcements', '["🌸 قطن طبيعي ناعم على بشرتك","🍒 اهتمام بالتفاصيل وحب في كل اختيار","🤍 اختاري اللي يناسبك من شيري مامي"]'::jsonb),
+    ('display', '{"shopHeading":"تشكيلة شيري مامي","heroSubtitle":"وجهتك المتكاملة لكل مستلزمات الأم والبيبي من أول يوم 👶🏻","showBadges":true,"whatsapp":"201224906360","phone":"01224906360"}'::jsonb)
 on conflict (key) do nothing;
 
 create table if not exists public.store_admins (
@@ -62,7 +62,6 @@ create table if not exists public.orders (
     customer_address text not null,
     items jsonb not null check (jsonb_typeof(items) = 'array'),
     subtotal numeric(12, 2) not null check (subtotal >= 0),
-    shipping numeric(12, 2) not null default 0 check (shipping >= 0),
     total numeric(12, 2) not null check (total >= 0),
     status text not null default 'new' check (status in ('new', 'confirmed', 'preparing', 'shipped', 'delivered', 'cancelled')),
     created_at timestamptz not null default now(),
@@ -79,7 +78,7 @@ returns boolean
 language sql
 stable
 security definer
-set search_path = public, pg_temp
+set search_path = pg_catalog, pg_temp
 as $$
     select exists (
         select 1
@@ -96,7 +95,8 @@ create or replace function public.save_store_state(
 )
 returns void
 language plpgsql
-set search_path = public, pg_temp
+security definer
+set search_path = pg_catalog, pg_temp
 as $$
 declare
     v_product jsonb;
@@ -114,6 +114,14 @@ begin
         or jsonb_typeof(p_announcements) is distinct from 'array'
         or jsonb_typeof(p_display) is distinct from 'object' then
         raise exception 'Invalid store data';
+    end if;
+    if exists (
+        select 1
+        from jsonb_array_elements_text(p_announcements) as message(text)
+        where message.text ~* '(شحن|توصيل|استلام|shipping|delivery)'
+    ) or coalesce(p_display->>'shopHeading', '') ~* '(شحن|توصيل|استلام|shipping|delivery)'
+        or coalesce(p_display->>'heroSubtitle', '') ~* '(شحن|توصيل|استلام|shipping|delivery)' then
+        raise exception 'Unsupported store content';
     end if;
 
     insert into public.categories (slug, name, sort_order)
@@ -228,7 +236,7 @@ create or replace function public.submit_store_order(
 returns jsonb
 language plpgsql
 security definer
-set search_path = public, pg_temp
+set search_path = pg_catalog, pg_temp
 as $$
 declare
     v_item jsonb;
@@ -243,9 +251,9 @@ declare
     v_order_id bigint;
     v_order_number text;
 begin
-    if length(trim(coalesce(p_customer_name, ''))) < 2
-        or length(trim(coalesce(p_customer_phone, ''))) < 8
-        or length(trim(coalesce(p_customer_address, ''))) < 8 then
+    if length(trim(coalesce(p_customer_name, ''))) not between 2 and 120
+        or length(trim(coalesce(p_customer_phone, ''))) not between 8 and 32
+        or length(trim(coalesce(p_customer_address, ''))) not between 8 and 500 then
         raise exception 'Please provide valid customer details';
     end if;
 
@@ -258,6 +266,10 @@ begin
 
     for v_item in select value from jsonb_array_elements(p_items) as entries(value)
     loop
+        if jsonb_typeof(v_item) is distinct from 'object' then
+            raise exception 'Invalid order item';
+        end if;
+
         begin
             v_product_id := (v_item->>'id')::bigint;
             v_qty := (v_item->>'qty')::integer;
@@ -321,7 +333,6 @@ begin
         customer_address,
         items,
         subtotal,
-        shipping,
         total,
         status
     )
@@ -331,7 +342,6 @@ begin
         trim(p_customer_address),
         v_items,
         v_subtotal,
-        0,
         v_subtotal,
         'new'
     )
@@ -368,7 +378,11 @@ with check (public.is_store_admin());
 
 drop policy if exists products_public_read on public.products;
 create policy products_public_read on public.products
-for select to anon, authenticated
+for select to anon
+using (active = true);
+drop policy if exists products_authenticated_read on public.products;
+create policy products_authenticated_read on public.products
+for select to authenticated
 using (active = true or public.is_store_admin());
 drop policy if exists products_admin_manage on public.products;
 create policy products_admin_manage on public.products
@@ -407,34 +421,32 @@ for update to authenticated
 using (public.is_store_admin())
 with check (public.is_store_admin());
 drop policy if exists orders_admin_delete on public.orders;
-create policy orders_admin_delete on public.orders
-for delete to authenticated
-using (public.is_store_admin());
-
-grant select on public.categories to anon, authenticated;
-grant insert, update, delete on public.categories to authenticated;
-grant select on public.products to anon, authenticated;
-grant insert, update, delete on public.products to authenticated;
-grant select, insert, update, delete on public.product_private_data to authenticated;
-grant select on public.store_settings to anon, authenticated;
-grant insert, update, delete on public.store_settings to authenticated;
-grant select, update, delete on public.orders to authenticated;
-grant execute on function public.is_store_admin() to authenticated;
-grant execute on function public.submit_store_order(text, text, text, jsonb) to anon, authenticated;
 
 -- After creating the first email/password user in Supabase Auth, authorize it:
 -- insert into public.store_admins (user_id)
 -- select id from auth.users where email = 'your-admin@email.com'
 -- on conflict (user_id) do nothing;
-grant usage, select on all sequences in schema public to authenticated;
 
-revoke all on public.product_private_data from anon;
-revoke all on public.store_admins from anon, authenticated;
-revoke all on public.orders from anon;
+revoke all on public.categories from public, anon, authenticated;
+revoke all on public.products from public, anon, authenticated;
+revoke all on public.product_private_data from public, anon, authenticated;
+revoke all on public.store_settings from public, anon, authenticated;
+revoke all on public.store_admins from public, anon, authenticated;
+revoke all on public.orders from public, anon, authenticated;
+revoke all on all sequences in schema public from public, anon, authenticated;
+grant select on public.categories to anon, authenticated;
+grant select on public.products to anon, authenticated;
+grant select on public.product_private_data to authenticated;
+grant select on public.store_settings to anon, authenticated;
+grant select on public.orders to authenticated;
+grant update (status, updated_at) on public.orders to authenticated;
+
 revoke all on function public.submit_store_order(text, text, text, jsonb) from public;
 revoke all on function public.is_store_admin() from public;
 revoke all on function public.save_store_state(jsonb, jsonb, jsonb, jsonb) from public;
-grant execute on function public.is_store_admin() to anon, authenticated;
-grant execute on function public.save_store_state(jsonb, jsonb, jsonb, jsonb) to authenticated;
+revoke all on function public.is_store_admin() from anon, authenticated;
+revoke all on function public.save_store_state(jsonb, jsonb, jsonb, jsonb) from anon, authenticated;
+revoke all on function public.submit_store_order(text, text, text, jsonb) from anon, authenticated;
 grant execute on function public.is_store_admin() to authenticated;
+grant execute on function public.save_store_state(jsonb, jsonb, jsonb, jsonb) to authenticated;
 grant execute on function public.submit_store_order(text, text, text, jsonb) to anon, authenticated;
