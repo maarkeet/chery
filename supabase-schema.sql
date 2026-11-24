@@ -46,7 +46,7 @@ create table if not exists public.store_settings (
 insert into public.store_settings (key, value)
 values
     ('announcements', '["💵 الدفع كاش عند الاستلام","🚚 توصيل لكل محافظات مصر","🌸 قطن طبيعي ناعم على بشرتك"]'::jsonb),
-    ('display', '{"shopHeading":"تشكيلة شيري مامي","heroSubtitle":"قطن ناعم للأم في كل مراحلها، من يومها العادي لحد أول حضن لبيبيها. وتوصيل لحد باب البيت في كل مصر.","showBadges":true}'::jsonb)
+    ('display', '{"shopHeading":"تشكيلة شيري مامي","heroSubtitle":"وجهتك المتكاملة لكل مستلزمات الأم والبيبي من أول يوم 👶🏻","showBadges":true}'::jsonb)
 on conflict (key) do nothing;
 
 create table if not exists public.store_admins (

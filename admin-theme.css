@@ -1,0 +1,172 @@
+:root {
+    --brand-navy: #1c2a73;
+    --brand-pink: #ff5ca3;
+    --brand-sky: #62b6ff;
+    --brand-sun: #ffd24d;
+    --brand-paper: #fff7fa;
+    --brand-blush: #ffe0ee;
+    --brand-muted: #6b72a6;
+}
+
+html,
+body {
+    font-family: 'Tajawal', Tahoma, sans-serif !important;
+}
+
+body {
+    color: var(--brand-navy) !important;
+    background: var(--brand-paper) !important;
+}
+
+h1,
+h2,
+h3 {
+    font-family: 'Baloo Bhaijaan 2', 'Tajawal', sans-serif;
+}
+
+#admin-login {
+    background-color: var(--brand-paper);
+    background-image:
+        radial-gradient(circle at 12% 18%, rgba(255, 92, 163, .16) 0 70px, transparent 72px),
+        radial-gradient(circle at 88% 84%, rgba(98, 182, 255, .18) 0 110px, transparent 112px);
+}
+
+#admin-login-form {
+    border: 2.5px solid var(--brand-navy) !important;
+    border-radius: 30px !important;
+    box-shadow: 8px 8px 0 var(--brand-navy) !important;
+}
+
+#admin-login-form img {
+    border: 2.5px solid var(--brand-navy);
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 4px 4px 0 var(--brand-pink);
+}
+
+#admin-login-form input,
+#admin-shell .field {
+    border: 2px solid var(--brand-navy) !important;
+    border-radius: 14px !important;
+    box-shadow: 2px 2px 0 rgba(28, 42, 115, .12);
+}
+
+#admin-login-form input:focus,
+#admin-shell .field:focus {
+    border-color: var(--brand-pink) !important;
+    box-shadow: 0 0 0 3px rgba(255, 92, 163, .17) !important;
+}
+
+#admin-shell #sidebar {
+    background: var(--brand-navy) !important;
+    border-inline-start: 2.5px solid var(--brand-pink);
+}
+
+#admin-shell .sidebar-link {
+    border: 1.5px solid transparent;
+}
+
+#admin-shell .sidebar-link:hover,
+#admin-shell .sidebar-link.active {
+    background: var(--brand-pink) !important;
+    border-color: var(--brand-navy);
+    color: var(--brand-navy) !important;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, .2) !important;
+}
+
+#admin-shell main > header {
+    background: rgba(255, 247, 250, .96) !important;
+    border-bottom: 2.5px solid var(--brand-navy) !important;
+    box-shadow: 0 3px 0 rgba(28, 42, 115, .08);
+}
+
+#admin-shell main {
+    background-image: radial-gradient(rgba(28, 42, 115, .055) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+#admin-shell article,
+#admin-shell .bg-white.border {
+    border: 2px solid var(--brand-navy) !important;
+    border-radius: 22px !important;
+    box-shadow: 4px 4px 0 var(--brand-navy);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+#admin-shell article:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 var(--brand-navy);
+}
+
+#admin-shell button.bg-admin-rose,
+#admin-shell button.bg-admin-ink,
+#admin-shell button[class*="bg-admin-rose"],
+#admin-shell button[class*="bg-admin-ink"] {
+    border: 2px solid var(--brand-navy);
+    box-shadow: 3px 3px 0 var(--brand-navy);
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+#admin-shell button.bg-admin-rose:hover,
+#admin-shell button.bg-admin-ink:hover,
+#admin-shell button[class*="bg-admin-rose"]:hover,
+#admin-shell button[class*="bg-admin-ink"]:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--brand-navy);
+    filter: saturate(1.08);
+}
+
+#admin-shell .text-admin-rose {
+    color: var(--brand-pink);
+}
+
+#admin-shell .bg-admin-ink {
+    background-color: var(--brand-navy) !important;
+}
+
+#admin-shell .bg-admin-rose {
+    background-color: var(--brand-pink) !important;
+}
+
+#admin-shell .border-admin-line {
+    border-color: var(--brand-navy) !important;
+}
+
+#admin-shell table thead {
+    background: var(--brand-blush) !important;
+    color: var(--brand-navy);
+}
+
+#admin-shell tbody tr:hover {
+    background: rgba(255, 224, 238, .45) !important;
+}
+
+#admin-shell #product-editor > aside {
+    background: var(--brand-paper) !important;
+    border-inline-end: 2.5px solid var(--brand-navy);
+}
+
+#admin-shell .view-section.active {
+    animation: admin-view-in .22s ease-out;
+}
+
+@keyframes admin-view-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+    #admin-login-form {
+        padding: 1.25rem !important;
+        box-shadow: 5px 5px 0 var(--brand-navy) !important;
+    }
+
+    #admin-shell article,
+    #admin-shell .bg-white.border {
+        box-shadow: 3px 3px 0 var(--brand-navy);
+    }
+
+    #admin-shell main > header {
+        min-height: 72px;
+    }
+}

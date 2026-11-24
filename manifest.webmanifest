@@ -1,8 +1,8 @@
 {
   "id": "./index.html",
-  "name": "شيري مامي | Chérie Mommy",
+  "name": "Chérie Mommy | شيري مامي",
   "short_name": "شيري مامي",
-  "description": "تسوّقي منتجات شيري مامي للأم والبنات.",
+  "description": "وجهتك المتكاملة لكل مستلزمات الأم والبيبي من أول يوم.",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "./index.html",
@@ -10,8 +10,8 @@
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
-  "background_color": "#FFF8F4",
-  "theme_color": "#2B2342",
+  "background_color": "#FFF7FA",
+  "theme_color": "#1C2A73",
   "categories": ["shopping", "lifestyle"],
   "icons": [
     {
@@ -31,7 +31,7 @@
     {
       "name": "كل المنتجات",
       "short_name": "المنتجات",
-      "url": "./index.html#shop-section"
+      "url": "./index.html#shop"
     }
   ]
 }

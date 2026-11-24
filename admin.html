@@ -7,7 +7,7 @@
     <title>لوحة تحكم شيري مامي</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
@@ -15,16 +15,16 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['IBM Plex Sans Arabic', 'sans-serif'] },
+                    fontFamily: { sans: ['Tajawal', 'sans-serif'] },
                     colors: {
-                        admin: { ink: '#241D3A', rose: '#C2306A', blush: '#F6DCE5', cream: '#FFF8F4', line: '#EDE7EE' }
+                        admin: { ink: '#1C2A73', rose: '#FF5CA3', blush: '#FFE0EE', cream: '#FFF7FA', line: '#1C2A73' }
                     }
                 }
             }
         }
     </script>
     <style>
-        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        body { font-family: 'Tajawal', sans-serif; }
         html, body { max-width: 100%; overflow-x: hidden; }
         .sidebar-link.active { background: #C2306A; color: #fff; box-shadow: 0 10px 24px rgba(194,48,106,.18); }
         .sidebar-link.active svg { opacity: 1; }
@@ -43,13 +43,16 @@
             main > header { padding-left: .75rem; padding-right: .75rem; }
         }
     </style>
+    <link rel="stylesheet" href="./admin-theme.css">
 </head>
 <body class="bg-[#F7F5F8] text-admin-ink min-h-screen">
     <div id="admin-login" class="min-h-screen flex items-center justify-center p-4">
         <form id="admin-login-form" class="w-full max-w-md bg-white border border-admin-line rounded-[28px] p-6 sm:p-8 shadow-xl space-y-5">
             <div class="text-center">
-                <div class="w-14 h-14 mx-auto rounded-2xl bg-admin-rose text-white flex items-center justify-center text-2xl">🌸</div>
-                <h1 class="font-bold text-xl mt-4">دخول لوحة الإدارة</h1>
+                <img src="./cherie-mommy-logo.jpg" alt="شيري مامي" class="w-24 h-24 mx-auto rounded-2xl object-contain">
+                <h1 class="font-bold text-xl mt-3">Chérie Mommy | شيري مامي</h1>
+                <p class="text-sm text-admin-ink/65 mt-2">وجهتك المتكاملة لكل مستلزمات الأم والبيبي من أول يوم 👶🏻</p>
+                <h2 class="font-bold text-lg mt-5">دخول لوحة الإدارة</h2>
                 <p class="text-xs text-admin-ink/50 mt-1">سجّلي الدخول بحساب الإدارة المعتمد في Supabase.</p>
             </div>
             <div>
@@ -70,7 +73,7 @@
     <aside id="sidebar" class="fixed right-0 top-0 z-50 h-screen w-[260px] bg-admin-ink px-4 py-5 text-white flex flex-col transition-transform">
         <div class="flex items-center justify-between px-2 mb-7">
             <a href="index.html" class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-admin-rose flex items-center justify-center text-xl shadow-lg">🌸</div>
+                <img src="./cherie-mommy-logo.jpg" alt="شيري مامي" class="w-11 h-11 rounded-2xl object-cover border-2 border-admin-rose bg-white">
                 <div>
                     <p class="font-bold leading-none">شيري مامي</p>
                     <p class="text-[10px] text-white/55 mt-1">لوحة الإدارة</p>
@@ -185,7 +188,7 @@
                         <h2 class="text-xl font-bold mt-2">المتجر جاهز للإدارة</h2>
                         <div class="mt-6 space-y-4">
                             <div class="flex items-center justify-between text-xs"><span class="text-white/65">حالة الصفحة الرئيسية</span><span class="text-green-300">متاحة</span></div>
-                            <div class="flex items-center justify-between text-xs"><span class="text-white/65">البيانات المحفوظة</span><span id="save-status">محلية</span></div>
+                            <div class="flex items-center justify-between text-xs"><span class="text-white/65">البيانات المحفوظة</span><span id="save-status">Supabase</span></div>
                             <div class="h-2 bg-white/10 rounded-full overflow-hidden"><div id="storage-bar" class="h-full w-0 rounded-full bg-admin-rose transition-all"></div></div>
                         </div>
                         <a href="index.html" target="_blank" class="mt-7 block text-center py-3 rounded-2xl bg-white text-admin-ink text-xs font-bold">معاينة المتجر ↗</a>
@@ -292,6 +295,9 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div><label class="text-xs font-bold block mb-1.5">عنوان قسم المنتجات</label><input id="set-shop-heading" class="field"></div>
                         <div><label class="text-xs font-bold block mb-1.5">وصف البانر الرئيسي</label><input id="set-hero-subtitle" class="field"></div>
+                        <div><label class="text-xs font-bold block mb-1.5">رقم واتساب مع كود الدولة</label><input id="set-store-whatsapp" inputmode="tel" class="field" placeholder="201xxxxxxxxx"></div>
+                        <div><label class="text-xs font-bold block mb-1.5">رقم الهاتف المعروض</label><input id="set-store-phone" inputmode="tel" class="field" placeholder="01xxxxxxxxx"></div>
+                        <div><label class="text-xs font-bold block mb-1.5">حد الشحن المجاني بالجنيه (0 لإخفائه)</label><input id="set-free-shipping" type="number" min="0" step="1" class="field" value="0"></div>
                     </div>
                     <div class="grid grid-cols-1 gap-3">
                         <label class="toggle-card flex items-center justify-between gap-3 border border-admin-line rounded-2xl p-4"><span class="text-xs font-bold">شارات العروض</span><input type="checkbox" id="toggle-badges" class="accent-admin-rose"></label>
@@ -430,8 +436,11 @@
         ];
         let defaultDisplaySettings = {
             shopHeading: 'تشكيلة شيري مامي',
-            heroSubtitle: 'قطن ناعم للأم في كل مراحلها، من يومها العادي لحد أول حضن لبيبيها. وتوصيل لحد باب البيت في كل مصر.',
-            showBadges: true
+            heroSubtitle: 'وجهتك المتكاملة لكل مستلزمات الأم والبيبي من أول يوم 👶🏻',
+            showBadges: true,
+            whatsapp: '',
+            phone: '',
+            freeShipping: 0
         };
 
         let catalog = [];
@@ -560,7 +569,11 @@
                 ? settings.announcements
                 : [...defaultAnnouncements];
             displaySettings = { ...defaultDisplaySettings, ...(settings.display || {}) };
+            if (displaySettings.heroSubtitle === 'قطن ناعم للأم في كل مراحلها، من يومها العادي لحد أول حضن لبيبيها. وتوصيل لحد باب البيت في كل مصر.') {
+                displaySettings.heroSubtitle = defaultDisplaySettings.heroSubtitle;
+            }
             orders = ordersResult.data;
+            document.getElementById('save-status').textContent = 'متصل بـ Supabase';
             refreshAll();
             renderOrders();
         }
@@ -815,6 +828,9 @@
             renderAnnouncements();
             document.getElementById('set-shop-heading').value = displaySettings.shopHeading;
             document.getElementById('set-hero-subtitle').value = displaySettings.heroSubtitle;
+            document.getElementById('set-store-whatsapp').value = displaySettings.whatsapp || '';
+            document.getElementById('set-store-phone').value = displaySettings.phone || '';
+            document.getElementById('set-free-shipping').value = Number(displaySettings.freeShipping) || 0;
             document.getElementById('toggle-badges').checked = displaySettings.showBadges;
         }
 
@@ -1045,6 +1061,12 @@
             event.preventDefault();
             displaySettings.shopHeading = document.getElementById('set-shop-heading').value.trim() || defaultDisplaySettings.shopHeading;
             displaySettings.heroSubtitle = document.getElementById('set-hero-subtitle').value.trim() || defaultDisplaySettings.heroSubtitle;
+            displaySettings.whatsapp = document.getElementById('set-store-whatsapp').value.replace(/\D/g, '');
+            displaySettings.phone = document.getElementById('set-store-phone').value.trim();
+            displaySettings.freeShipping = Number(document.getElementById('set-free-shipping').value);
+            if (!Number.isFinite(displaySettings.freeShipping) || displaySettings.freeShipping < 0) {
+                return notify('أدخلي حد شحن مجاني صحيحًا أو 0 لإخفائه');
+            }
             displaySettings.showBadges = document.getElementById('toggle-badges').checked;
             if (!await persist()) return;
             notify('تم حفظ إعدادات العرض');
