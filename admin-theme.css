@@ -169,4 +169,50 @@ h3 {
     #admin-shell main > header {
         min-height: 72px;
     }
+
+    #admin-shell main > header {
+        height: auto !important;
+        gap: 8px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    #admin-shell main > header > div:first-child {
+        min-width: 0;
+        gap: 8px;
+    }
+
+    #admin-shell #page-title {
+        font-size: 15px;
+    }
+
+    #admin-shell #page-subtitle {
+        max-width: 145px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #admin-shell main > header > div:last-child > button {
+        padding: 8px 10px !important;
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    #admin-shell main > div.p-4 {
+        padding: 12px !important;
+    }
+
+    #admin-shell #sidebar {
+        width: min(260px, calc(100vw - 28px)) !important;
+    }
+
+    #admin-shell #product-editor > aside {
+        width: 100vw;
+    }
+
+    #admin-shell .overflow-x-auto {
+        max-width: 100%;
+        border-radius: 14px;
+    }
 }

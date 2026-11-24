@@ -1,8 +1,8 @@
-const CACHE_NAME = 'cherie-mommy-shell-v3';
+const CACHE_NAME = 'cherie-mommy-shell-v6';
 const APP_URL = new URL('./index.html', self.registration.scope).href;
 const APP_SHELL = [
     APP_URL,
-    new URL('./style.css', self.registration.scope).href,
+    new URL('./style.css?v=mobile-v3', self.registration.scope).href,
     new URL('./data.js', self.registration.scope).href,
     new URL('./storefront-loader.js', self.registration.scope).href,
     new URL('./script.js', self.registration.scope).href,

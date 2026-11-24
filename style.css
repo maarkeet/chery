@@ -301,3 +301,97 @@ details p{padding:0 18px 16px;color:var(--muted);font-weight:500}
 @media(max-width:960px){.tile:nth-child(9){grid-column:span 2}}
 html,body{overflow-x:clip;max-width:100%}
 .promo,.giant,.hero{contain:paint}
+
+@media(max-width:640px){
+  .wrap{width:calc(100% - 24px)}
+  .shop{grid-template-columns:minmax(0,1fr)}
+  .shop>*,.filters,#grid,.count,.more,.filters ul,.ranges{min-width:0;max-width:100%}
+  .filters select{width:100%;max-width:100%}
+  #grid{width:100%;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .card{min-width:0}
+  .promo{font-size:12px;padding:5px 0}
+  .promo__track{gap:24px;padding-inline-start:24px}
+  .promo__track span::before{margin-inline-end:18px}
+  .header__row{gap:8px;padding:8px 0}
+  .logo{gap:7px}
+  .logo img{width:42px;height:42px}
+  .logo span{font-size:18px}
+  .cart{width:44px;height:44px}
+  .search input{padding:9px 14px;font-size:15px}
+  .hero__grid{padding:30px 0 36px;gap:8px}
+  .hero__copy{text-align:center}
+  .hero__copy .sticker{font-size:12px}
+  .hero h1{font-size:clamp(34px,10vw,48px);margin:14px 0 12px}
+  .lead{font-size:16px;margin:0 auto 20px}
+  .hero__cta{justify-content:center;gap:10px}
+  .hero__cta .btn{flex:1 1 135px;min-height:48px;padding:10px 12px;font-size:15px}
+  .hero__art{min-height:300px;margin-top:0;overflow:hidden}
+  .badge{width:min(270px,66vw);border-width:3px;box-shadow:7px 7px 0 var(--navy);padding:6px}
+  .ring{width:min(360px,96vw)}
+  .blob--b{width:105px;height:105px}
+  .blob--y{width:72px;height:72px}
+  .f1{inset-inline-start:1%;inset-block-start:5%;padding:7px 11px}
+  .f1 b{font-size:23px}
+  .f2{width:66px;height:66px;padding:9px}
+  .section{padding:40px 0}
+  .head{gap:6px;margin-bottom:20px}
+  .head h2{font-size:clamp(27px,8vw,36px)}
+  .head p{font-size:14px}
+  .bento{gap:10px}
+  .tile{min-height:124px!important;padding:14px;border-radius:20px}
+  .tile:nth-child(1){min-height:144px!important}
+  .tile:nth-child(9){grid-column:span 1}
+  .tile h3{font-size:19px}
+  .tile small{font-size:12px}
+  .stats__row div{padding:16px 8px}
+  .stats b{font-size:clamp(32px,10vw,44px)}
+  .stats span{font-size:13px}
+  .grid,.finder__res{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{border-radius:18px}
+  .art{aspect-ratio:1}
+  .art .product-img[data-fallback-applied="true"]{width:76%;height:76%;padding:0;border:2px solid #fff;border-radius:50%;background:#fff}
+  .tag{font-size:10px;padding:0 7px;inset-block-start:7px;inset-inline-start:7px}
+  .cbody{padding:9px;gap:8px}
+  .cbody h3{font-size:13px;min-height:36px}
+  .variants{gap:4px}
+  .variants button{font-size:10px;padding:3px 6px}
+  .swatch{width:12px;height:12px;flex-basis:12px}
+  .price{font-size:18px}
+  .price em{font-size:11px}
+  .add{width:36px;height:36px;font-size:22px}
+  .filters{padding:12px}
+  .filters ul::-webkit-scrollbar{display:none}
+  .finder__box,.how{gap:24px}
+  .finder__res .card:nth-child(even){transform:none}
+  .finder__res .card:only-child{grid-column:1/-1;width:min(100%,240px);justify-self:center}
+  .empty{padding:18px 10px}
+  .steps li{column-gap:10px;padding:12px}
+  .steps li::before{width:42px;height:42px}
+  .cta__in{padding:32px 0}
+  .footer{padding-top:32px}
+  .footer__grid{gap:20px;padding-bottom:22px}
+  .modal{padding:8px}
+  .modal__box{width:100%;max-height:calc(100dvh - 16px);border-radius:20px;box-shadow:5px 5px 0 var(--navy)}
+  .m-art{min-height:180px!important}
+  .m-info{padding:18px;gap:12px}
+  .m-info h3{font-size:24px}
+  .m-info .price{font-size:30px}
+  .m-art .product-img{min-height:180px;padding:16px}
+  .drawer__head{padding:12px 14px}
+  .drawer__body{padding:10px 14px}
+  .drawer__foot{padding:12px 14px max(12px,env(safe-area-inset-bottom))}
+  .toast{width:calc(100% - 32px);max-width:420px;padding:10px 14px;text-align:center;font-size:14px}
+  .wa,.totop{width:46px;height:46px;bottom:max(14px,env(safe-area-inset-bottom))}
+}
+
+@media(max-width:380px){
+  .wrap{width:calc(100% - 20px)}
+  .hero__art{min-height:270px}
+  .badge{width:min(235px,64vw)}
+  .grid{gap:8px}
+  .cbody{padding:8px}
+  .cbody h3{font-size:12px}
+  .variants button{max-width:100%;font-size:9px}
+  .price{font-size:16px}
+  .add{width:32px;height:32px}
+}
