@@ -52,6 +52,18 @@ const iconOf = p => { for(const [r,i] of KEYS) if(r.test(p.name)) return i; retu
 const money = n => Number(n).toLocaleString("ar-EG");
 const $ = s => document.querySelector(s);
 const esc = s => s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const normalizeSearch = value => String(value||"")
+  .toLowerCase()
+  .normalize("NFKD")
+  .replace(/[\u064B-\u0652\u0670]/g,"")
+  .replace(/[أإآٱ]/g,"ا")
+  .replace(/ى/g,"ي")
+  .replace(/ؤ/g,"و")
+  .replace(/ئ/g,"ي")
+  .replace(/ة/g,"ه")
+  .replace(/ـ/g,"")
+  .replace(/[^\p{L}\p{N}]+/gu," ")
+  .trim();
 
 let favs=[];try{favs=JSON.parse(localStorage.getItem("cm_fav")||"[]")}catch(e){}
 const state = {cat:"الكل", q:"", sort:"def", max:0, shown:CONFIG.perPage, chosen:{}, variants:{}};
@@ -100,8 +112,28 @@ function card(p){
    <div class="cfoot"><div class="price">${p.max&&p.max>p.price?"<small>ابتداءً من</small>":""}${money(p.price)}<em>${CONFIG.currency}</em></div><button class="add" data-add="${p.id}" aria-label="أضيفي للسلة">+</button></div></div></article>`;
 }
 function list(){
-  const q=state.q.trim().toLowerCase();
-  let l=PRODUCTS.filter(p=>(state.cat==="الكل"||(state.cat==="__fav"?favs.includes(p.id):p.cat===state.cat))&&(!q||p.name.toLowerCase().includes(q))&&(!state.max||p.price<=state.max));
+  const q=normalizeSearch(state.q);
+  let l=PRODUCTS.filter(p=>{
+    const searchable=normalizeSearch([
+      p.name,p.nameEn||"",p.description||"",p.cat,p.badge||"",
+      ...(p.sizes||[]),
+      ...(Array.isArray(p.variants)?p.variants.map(v=>v.name||""):[])
+    ].join(" "));
+    const terms=q? q.split(/\s+/):[];
+    return (state.cat==="الكل"||(state.cat==="__fav"?favs.includes(p.id):p.cat===state.cat))
+      &&(!q||terms.every(term=>searchable.includes(term)))
+      &&(!state.max||p.price<=state.max);
+  });
+  if(q){
+    l.sort((a,b)=>{
+      const aName=normalizeSearch(a.name),bName=normalizeSearch(b.name);
+      const score=p=>{
+        const name=normalizeSearch(p.name);
+        return name===q?300:name.startsWith(q)?200:name.includes(q)?100:normalizeSearch(p.cat).includes(q)?50:0;
+      };
+      return score(b)-score(a);
+    });
+  }
   if(state.sort==="low")l.sort((a,b)=>a.price-b.price);
   if(state.sort==="high")l.sort((a,b)=>b.price-a.price);
   if(state.sort==="name")l.sort((a,b)=>a.name.localeCompare(b.name,"ar"));
@@ -110,7 +142,7 @@ function list(){
 function render(){
   const l=list();
   $("#grid").innerHTML=l.length?l.slice(0,state.shown).map(card).join(""):`<div class="empty">مفيش منتجات بالشكل ده. جربي كلمة تانية أو قسم تاني.</div>`;
-  $("#resultInfo").textContent=`${l.length} منتج`+(state.cat==="__fav"?" — المفضلة":state.cat!=="الكل"?` — ${state.cat}`:"");
+  $("#resultInfo").textContent=`${l.length} منتج`+(state.q.trim()?` — نتائج البحث عن «${state.q.trim()}»`:"")+(state.cat==="__fav"?" — المفضلة":state.cat!=="الكل"?` — ${state.cat}`:"");
   $("#moreBtn").parentElement.style.display=l.length>state.shown?"":"none";
   document.querySelectorAll("#catList button").forEach(b=>b.classList.toggle("on",b.dataset.cat===state.cat));
   document.querySelectorAll("#ranges button").forEach(b=>b.classList.toggle("on",+b.dataset.max===state.max));
@@ -194,8 +226,23 @@ addEventListener("keydown",e=>{if(e.key==="Escape")open(false)});
 $("#clearCart").onclick=()=>{cart=[];save();drawCart()};$("#checkout").onclick=checkout;
 $("#moreBtn").onclick=()=>{state.shown+=CONFIG.perPage;render()};
 $("#sort").onchange=e=>{state.sort=e.target.value;render()};
-$("#searchInput").oninput=e=>{state.q=e.target.value;state.cat="الكل";state.shown=CONFIG.perPage;render()};
-$("#searchForm").onsubmit=e=>{e.preventDefault();$("#shop").scrollIntoView()};
+
+$("#searchInput").oninput=e=>{
+  state.q=e.target.value;
+  state.cat="الكل";
+  state.shown=CONFIG.perPage;
+  render();
+};
+$("#searchInput").onkeydown=e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    $("#shop").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+};
+$("#searchForm").onsubmit=e=>{
+  e.preventDefault();
+  $("#shop").scrollIntoView({behavior:"smooth",block:"start"});
+};
 
 build();render();drawCart();
 $("#featured").innerHTML=PRODUCTS.filter(p=>p.price>=100&&p.cat!=="ملابس الأطفال").sort((a,b)=>(a.id*7919)%97-(b.id*7919)%97).slice(0,10).map(card).join("");

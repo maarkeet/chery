@@ -29,7 +29,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .logo img{width:56px;height:56px;border-radius:50%;border:var(--bd);box-shadow:var(--sh-s)}
 .logo span{display:flex;flex-direction:column;line-height:.95;font-family:var(--fd);font-size:25px;font-weight:800}
 .logo b:first-child{color:var(--sky)}.logo b:last-child{color:var(--pink)}
-.search{flex:1;max-width:560px;margin-inline:auto;display:flex;border:var(--bd);border-radius:999px;background:#fff;box-shadow:var(--sh-s);overflow:hidden}
+.search{position:relative;flex:1;max-width:560px;margin-inline:auto;display:flex;border:var(--bd);border-radius:999px;background:#fff;box-shadow:var(--sh-s);overflow:visible}
 .search input{flex:1;border:0;outline:0;padding:11px 20px;background:transparent;min-width:0}
 .search button{width:50px;display:grid;place-items:center;background:var(--sun);border-inline-start:var(--bd)}
 .search svg{width:22px;height:22px}
@@ -316,6 +316,7 @@ html,body{overflow-x:clip;max-width:100%}
 
 @media(max-width:640px){
   .wrap{width:calc(100% - 24px)}
+  .search{overflow:visible}
   .mobile-actions{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));

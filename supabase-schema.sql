@@ -26,6 +26,7 @@ create table if not exists public.products (
     sizes jsonb not null default '[]'::jsonb check (jsonb_typeof(sizes) = 'array'),
     variants jsonb not null default '[{"name":"","hex":"#F2B6C6","img":""}]'::jsonb check (jsonb_typeof(variants) = 'array'),
     active boolean not null default true,
+    stock integer not null default 0 check (stock >= 0),
     created_at timestamptz not null default now(),
     updated_at timestamptz not null default now()
 );

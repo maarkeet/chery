@@ -28,7 +28,7 @@
 
         const [productsResult, categoriesResult, settingsResult] = await Promise.all([
             client.from('products')
-                .select('id,title,category,price,compare_at,badge,has_colors,sizes,variants,active,created_at')
+                .select('id,title,title_en,description,category,price,compare_at,badge,has_colors,sizes,variants,active,created_at')
                 .eq('active', true)
                 .order('created_at', { ascending: false }),
             client.from('categories')
@@ -82,6 +82,8 @@
             return {
                 id,
                 name: product.title,
+                nameEn: product.title_en || '',
+                description: product.description || '',
                 cat: categoryNames.get(product.category) || product.category,
                 price,
                 max: product.compare_at === null ? null : Number(product.compare_at),

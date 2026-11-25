@@ -204,6 +204,24 @@
                     </div>
                     <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                         <select id="product-category-filter" onchange="renderProductTable()" class="field col-span-2 min-w-0 sm:col-span-1 sm:w-44 sm:shrink-0"></select>
+                        <select id="product-status-filter" onchange="renderProductTable()" class="field min-w-0 sm:w-32" aria-label="تصفية حالة المنتج">
+                            <option value="all">كل الحالات</option>
+                            <option value="active">منشور</option>
+                            <option value="draft">مسودة</option>
+                        </select>
+                        <select id="product-stock-filter" onchange="renderProductTable()" class="field min-w-0 sm:w-32" aria-label="تصفية المخزون">
+                            <option value="all">كل المخزون</option>
+                            <option value="available">متوفر</option>
+                            <option value="low">مخزون منخفض</option>
+                            <option value="out">نفد المخزون</option>
+                        </select>
+                        <select id="product-sort-filter" onchange="renderProductTable()" class="field min-w-0 sm:w-36" aria-label="ترتيب المنتجات">
+                            <option value="default">الأحدث</option>
+                            <option value="price-low">السعر: الأقل أولًا</option>
+                            <option value="price-high">السعر: الأعلى أولًا</option>
+                            <option value="stock-low">المخزون: الأقل أولًا</option>
+                            <option value="name">ترتيب أبجدي</option>
+                        </select>
                         <button onclick="document.getElementById('excel-import-input').click()" class="w-full sm:w-auto px-3 sm:px-4 py-2.5 rounded-xl bg-admin-rose text-white text-xs font-bold hover:bg-[#A82358] transition">استيراد Excel</button>
                         <input id="excel-import-input" type="file" accept=".xlsx,.xls,.csv" class="hidden">
                         <button onclick="downloadExcelTemplate()" class="w-full sm:w-auto px-3 sm:px-4 py-2.5 rounded-xl border border-admin-line text-xs font-bold hover:border-admin-rose transition">نموذج Excel</button>
@@ -801,12 +819,33 @@
         }
 
         function renderProductTable() {
-            const query = document.getElementById('product-search').value.trim().toLowerCase();
+            const query = document.getElementById('product-search').value.trim().toLowerCase()
+                .replace(/[أإآ]/g, 'ا')
+                .replace(/ة/g, 'ه')
+                .replace(/ى/g, 'ي');
             const selectedCategory = document.getElementById('product-category-filter').value || 'all';
-            const filtered = catalog.filter(p =>
+            const selectedStatus = document.getElementById('product-status-filter').value || 'all';
+            const selectedStock = document.getElementById('product-stock-filter').value || 'all';
+            const sort = document.getElementById('product-sort-filter').value || 'default';
+            let filtered = catalog.filter(p =>
                 (selectedCategory === 'all' || p.category === selectedCategory) &&
-                (!query || (p.title || '').toLowerCase().includes(query) || (p.titleEn || '').toLowerCase().includes(query) || (p.vendor || '').toLowerCase().includes(query))
+                (selectedStatus === 'all' || (selectedStatus === 'active' ? p.active !== false : p.active === false)) &&
+                (selectedStock === 'all'
+                    || (selectedStock === 'available' && Number(p.stock || 0) > 5)
+                    || (selectedStock === 'low' && Number(p.stock || 0) > 0 && Number(p.stock || 0) <= 5)
+                    || (selectedStock === 'out' && Number(p.stock || 0) <= 0)) &&
+                (!query || [(p.title || ''), (p.titleEn || ''), (p.vendor || ''), categoryName(p.category)]
+                    .join(' ')
+                    .toLowerCase()
+                    .replace(/[أإآ]/g, 'ا')
+                    .replace(/ة/g, 'ه')
+                    .replace(/ى/g, 'ي')
+                    .includes(query))
             );
+            if(sort === 'price-low') filtered.sort((a,b) => Number(a.price) - Number(b.price));
+            if(sort === 'price-high') filtered.sort((a,b) => Number(b.price) - Number(a.price));
+            if(sort === 'stock-low') filtered.sort((a,b) => Number(a.stock || 0) - Number(b.stock || 0));
+            if(sort === 'name') filtered.sort((a,b) => (a.title || '').localeCompare(b.title || '', 'ar'));
             document.getElementById('product-result-count').textContent = filtered.length + ' منتج';
             document.getElementById('products-table-body').innerHTML = filtered.length ? filtered.map(p => `
                 <tr class="hover:bg-[#FCFBFD]">
@@ -825,6 +864,9 @@
         function clearProductFilters() {
             document.getElementById('product-search').value = '';
             document.getElementById('product-category-filter').value = 'all';
+            document.getElementById('product-status-filter').value = 'all';
+            document.getElementById('product-stock-filter').value = 'all';
+            document.getElementById('product-sort-filter').value = 'default';
             renderProductTable();
         }
 
