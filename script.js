@@ -75,7 +75,13 @@ function build(){
   const announcements=window.STORE_SETTINGS?.announcements||[];
   $("#promo").innerHTML=announcements.concat(announcements).map(t=>`<span>${esc(String(t))}</span>`).join("");
   $("#heroIcon1").innerHTML=IC.bottle;
-  $("#catGrid").innerHTML=names.map(n=>`<a href="#shop" class="tile" data-cat="${esc(n)}" style="--c:${CATS[n].c};--rot:${CATS[n].rot}">${svg(CATS[n].ic)}<h3>${esc(n)}</h3><small>${counts[n]||0} منتج</small></a>`).join("");
+  $("#catGrid").innerHTML=names.map(n=>{
+    const image=window.STORE_CATEGORY_IMAGES?.[n]||"./cherie-mommy-logo.jpg";
+    return `<a href="#shop" class="tile" data-cat="${esc(n)}" style="--c:${CATS[n].c};--rot:${CATS[n].rot}">
+      <img class="tile__image" src="${esc(image)}" alt="${esc(n)}" loading="lazy" onerror="this.onerror=null;this.src='./cherie-mommy-logo.jpg'">
+      <h3>${esc(n)}</h3><small>${counts[n]||0} منتج</small>
+    </a>`;
+  }).join("");
   $("#catList").innerHTML=["الكل",...names,"__fav"].map(n=>`<li><button data-cat="${esc(n)}" class="${n==="الكل"?"on":""}">${n==="__fav"?"♥ المفضلة":esc(n)}<small>${n==="الكل"?PRODUCTS.length:n==="__fav"?favs.length:counts[n]||0}</small></button></li>`).join("");
   $("#ranges").innerHTML=[[0,"الكل"],[50,"حتى ٥٠"],[100,"حتى ١٠٠"],[250,"حتى ٢٥٠"],[500,"حتى ٥٠٠"]].map(([v,l])=>`<button data-max="${v}" class="${v===0?"on":""}">${l}</button>`).join("");
   $("#footCats").innerHTML=names.slice(0,6).map(n=>`<li><a href="#shop" data-cat="${esc(n)}">${esc(n)}</a></li>`).join("");

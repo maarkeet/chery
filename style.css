@@ -1,5 +1,5 @@
 :root{
-  --navy:#1c2a73; --pink:#ff5ca3; --sky:#62b6ff; --sun:#ffd24d; --mint:#8ce6c4; --lilac:#c9b6ff;
+  --navy:#1c2a73; --pink:#ff5ca3; --sky:#62b6ff; --sun:#d9efff; --mint:#8ce6c4; --lilac:#c9b6ff;
   --paper:#fff7fa; --blush:#ffe0ee; --ice:#e1f1ff; --ink:#1c2a73; --muted:#6b72a6;
   --bd:2.5px solid var(--navy); --sh:4px 4px 0 var(--navy); --sh-s:3px 3px 0 var(--navy);
   --fd:'Baloo Bhaijaan 2','Tajawal',sans-serif; --fb:'Tajawal',Tahoma,sans-serif;
@@ -39,6 +39,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .cart i{position:absolute;top:-8px;inset-inline-start:-8px;min-width:24px;height:24px;padding:0 4px;border-radius:12px;background:var(--sun);color:var(--navy);border:2px solid var(--navy);font:800 13px/20px var(--fb);text-align:center}
 .cart.bump{animation:bump .35s}
 @keyframes bump{50%{transform:scale(1.18) rotate(-6deg)}}
+.mobile-actions{display:none}
 
 /* buttons / sticker */
 .btn{display:inline-flex;align-items:center;justify-content:center;padding:13px 30px;border-radius:999px;border:var(--bd);font-weight:800;font-size:17px;box-shadow:var(--sh);transition:transform .15s,box-shadow .15s}
@@ -86,6 +87,8 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .tile:nth-child(-n+2) svg{width:38%;max-width:170px}
 .tile h3{font-family:var(--fd);font-size:24px;font-weight:800;line-height:1.15;position:relative}
 .tile small{font-weight:700;position:relative}
+.tile__image{position:absolute;inset-inline-end:14px;inset-block-start:14px;width:46%;height:72%;max-width:130px;object-fit:cover;object-position:center;border:3px solid var(--navy);border-radius:50%;background:#fff;transform:rotate(var(--rot,0deg));box-shadow:4px 4px 0 rgba(28,42,115,.18);z-index:1}
+.tile:nth-child(-n+2) .tile__image{width:38%;max-height:150px}
 
 /* rail + cards */
 .rail{display:flex;gap:20px;overflow-x:auto;padding:4px 6px 22px;scroll-snap-type:x proximity;scrollbar-width:thin}
@@ -226,7 +229,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .hero__art{min-height:480px}
 
 .giant{background:var(--sun);border-bottom:var(--bd);overflow:hidden;white-space:nowrap;padding:6px 0}
-.giant__track{display:inline-flex;align-items:center;gap:34px;animation:slide2 30s linear infinite;font-family:var(--fd);font-weight:800;font-size:clamp(54px,9vw,120px);line-height:1.1}
+.giant__track{display:inline-flex;align-items:center;gap:34px;animation:slide2 30s linear infinite;font-family:var(--fd);font-weight:800;font-size:clamp(46px,7.65vw,102px);line-height:1.1}
 .giant .o{color:transparent;-webkit-text-stroke:2.5px var(--navy)}
 .giant i{font-style:normal;color:var(--pink);font-size:.5em}
 @keyframes slide2{to{transform:translateX(50%)}}
@@ -313,6 +316,32 @@ html,body{overflow-x:clip;max-width:100%}
 
 @media(max-width:640px){
   .wrap{width:calc(100% - 24px)}
+  .mobile-actions{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    width:calc(100% - 24px);
+    margin:-4px auto 18px;
+    position:relative;
+    z-index:5
+  }
+  .mobile-actions__btn{
+    min-height:44px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:2.5px solid var(--navy);
+    border-radius:999px;
+    font-family:var(--fd);
+    font-size:14px;
+    font-weight:800;
+    box-shadow:3px 3px 0 var(--navy);
+    transition:transform .15s,box-shadow .15s
+  }
+  .mobile-actions__btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--navy)}
+  .mobile-actions__btn--pink{background:var(--pink);color:#fff}
+  .mobile-actions__btn--line{background:#fff;color:var(--navy)}
+  .hero__cta{display:none}
   .shop{grid-template-columns:minmax(0,1fr)}
   .shop>*,.filters,#grid,.count,.more,.filters ul,.ranges{min-width:0;max-width:100%}
   .filters select{width:100%;max-width:100%}
@@ -334,9 +363,10 @@ html,body{overflow-x:clip;max-width:100%}
   .lead{font-size:16px;margin:0 auto 20px}
   .hero__cta{justify-content:center;gap:10px}
   .hero__cta .btn{flex:1 1 135px;min-height:48px;padding:10px 12px;font-size:15px}
-  .hero__art{min-height:300px;margin-top:0;overflow:hidden}
-  .badge{width:min(270px,66vw);border-width:3px;box-shadow:7px 7px 0 var(--navy);padding:6px}
-  .ring{width:min(360px,96vw)}
+  .hero__art{width:100%;min-height:300px;margin-top:0;overflow:visible;isolation:isolate}
+  .badge{width:min(300px,78vw);border-width:3px;box-shadow:7px 7px 0 var(--navy);padding:5px}
+  .ring{width:calc(min(300px,78vw) + 22mm);z-index:3}
+  .ring text{font-size:20px;letter-spacing:1.5px;opacity:1}
   .blob--b{width:105px;height:105px}
   .blob--y{width:72px;height:72px}
   .f1{inset-inline-start:1%;inset-block-start:5%;padding:7px 11px}
@@ -347,11 +377,13 @@ html,body{overflow-x:clip;max-width:100%}
   .head h2{font-size:clamp(27px,8vw,36px)}
   .head p{font-size:14px}
   .bento{gap:10px}
-  .tile{min-height:124px!important;padding:14px;border-radius:20px}
+  .tile{min-height:132px!important;padding:10px 8px;border-radius:20px;align-items:center;justify-content:flex-start}
+  .tile__image{position:relative;inset:auto;width:72px;height:72px;max-width:none;max-height:none;margin:0 auto 8px;border-width:2.5px;box-shadow:3px 3px 0 rgba(28,42,115,.18);transform:none;flex:0 0 auto}
+  .tile:nth-child(-n+2) .tile__image{width:72px;height:72px;max-height:none}
   .tile:nth-child(1){min-height:144px!important}
   .tile:nth-child(9){grid-column:span 1}
-  .tile h3{font-size:19px}
-  .tile small{font-size:12px}
+  .tile h3{font-size:17px;text-align:center}
+  .tile small{font-size:12px;text-align:center}
   .stats__row div{padding:16px 8px}
   .stats b{font-size:clamp(32px,10vw,44px)}
   .stats span{font-size:13px}
@@ -400,8 +432,11 @@ html,body{overflow-x:clip;max-width:100%}
 
 @media(max-width:380px){
   .wrap{width:calc(100% - 20px)}
-  .hero__art{min-height:270px}
-  .badge{width:min(235px,64vw)}
+  .hero__art{min-height:280px}
+  .badge{width:min(260px,72vw)}
+  .ring{width:calc(min(260px,72vw) + 22mm);z-index:3}
+  .ring text{font-size:18px;letter-spacing:1px;opacity:1}
+  .tile__image,.tile:nth-child(-n+2) .tile__image{width:62px;height:62px}
   .grid{gap:8px}
   .cbody{padding:8px}
   .cbody h3{font-size:12px}

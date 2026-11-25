@@ -2,9 +2,11 @@ create table if not exists public.categories (
     slug text primary key check (slug ~ '^[a-z0-9][a-z0-9_-]*$'),
     name text not null,
     name_en text,
+    image_url text not null default '',
     sort_order integer not null default 0,
     created_at timestamptz not null default now()
 );
+alter table public.categories add column if not exists image_url text not null default '';
 
 insert into public.categories (slug, name, sort_order)
 values ('all', 'الكل', 0)
@@ -117,8 +119,8 @@ begin
     end if;
     if exists (
         select 1
-        from jsonb_array_elements_text(p_announcements) as message(text)
-        where message.text ~* '(شحن|توصيل|استلام|shipping|delivery)'
+        from jsonb_array_elements_text(p_announcements) as announcement_entry(text)
+        where announcement_entry.text ~* '(شحن|توصيل|استلام|shipping|delivery)'
     ) or coalesce(p_display->>'shopHeading', '') ~* '(شحن|توصيل|استلام|shipping|delivery)'
         or coalesce(p_display->>'heroSubtitle', '') ~* '(شحن|توصيل|استلام|shipping|delivery)' then
         raise exception 'Unsupported store content';
@@ -134,16 +136,18 @@ begin
         if v_slug is null or v_slug !~ '^[a-z0-9][a-z0-9_-]*$' then
             raise exception 'Invalid category';
         end if;
-        insert into public.categories (slug, name, name_en, sort_order)
+        insert into public.categories (slug, name, name_en, image_url, sort_order)
         values (
             v_slug,
             coalesce(nullif(v_category->>'name', ''), v_slug),
             nullif(v_category->>'nameEn', ''),
+            coalesce(nullif(v_category->>'imageUrl', ''), ''),
             coalesce(nullif(v_category->>'sortOrder', '')::integer, 0)
         )
         on conflict (slug) do update set
             name = excluded.name,
             name_en = excluded.name_en,
+            image_url = excluded.image_url,
             sort_order = excluded.sort_order;
         v_slugs := array_append(v_slugs, v_slug);
     end loop;

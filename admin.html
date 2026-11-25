@@ -255,6 +255,7 @@
                         <form id="category-form" class="space-y-3">
                             <div><label class="text-xs font-bold block mb-1.5">اسم القسم</label><input id="new-cat-name" required placeholder="مثال: بيجامات شتوية" class="field"></div>
                             <div><label class="text-xs font-bold block mb-1.5">المعرف (إنجليزي)</label><input id="new-cat-slug" placeholder="winter-pajamas" class="field"></div>
+                            <div><label class="text-xs font-bold block mb-1.5">رابط صورة القسم</label><input id="new-cat-image" type="url" placeholder="https://..." class="field"></div>
                             <button type="submit" class="w-full py-3 rounded-xl bg-admin-rose text-white text-xs font-bold">إضافة القسم</button>
                         </form>
                     </article>
@@ -577,6 +578,7 @@
                     slug: category.slug,
                     name: category.name,
                     nameEn: category.name_en,
+                imageUrl: category.image_url || '',
                     sortOrder: category.sort_order
                 }))
                 : [...defaultCategories];
@@ -830,7 +832,15 @@
             document.getElementById('category-count').textContent = categories.length + ' قسم';
             document.getElementById('categories-grid').innerHTML = categories.map(c => {
                 const count = c.slug === 'all' ? catalog.length : catalog.filter(p => p.category === c.slug).length;
-                return `<article class="border border-admin-line rounded-2xl p-4 flex items-center justify-between"><div><p class="font-bold text-sm">${escapeHtml(c.name)}</p><p class="text-[10px] text-admin-ink/45 mt-1">${count} منتج • ${escapeHtml(c.slug)}</p></div>${c.slug === 'all' ? '<span class="text-[10px] bg-admin-cream px-2 py-1 rounded-full">أساسي</span>' : `<button onclick="deleteCategory('${escapeHtml(c.slug)}')" class="w-8 h-8 rounded-lg bg-red-50 text-red-600">×</button>`}</article>`;
+                const image = hasProductImage(c.imageUrl) ? productImageUrl(c.imageUrl) : './cherie-mommy-logo.jpg';
+                return `<article class="border border-admin-line rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <img src="${escapeHtml(image)}" class="w-14 h-14 rounded-full border-2 border-admin-line object-cover bg-admin-cream">
+                        <div class="flex-1 min-w-0"><p class="font-bold text-sm">${escapeHtml(c.name)}</p><p class="text-[10px] text-admin-ink/45 mt-1">${count} منتج • ${escapeHtml(c.slug)}</p></div>
+                        ${c.slug === 'all' ? '<span class="text-[10px] bg-admin-cream px-2 py-1 rounded-full">أساسي</span>' : `<button onclick="deleteCategory('${escapeHtml(c.slug)}')" class="w-8 h-8 rounded-lg bg-red-50 text-red-600">×</button>`}
+                    </div>
+                    ${c.slug === 'all' ? '' : `<div class="flex gap-2"><input id="cat-image-${escapeHtml(c.slug)}" type="url" value="${escapeHtml(c.imageUrl || '')}" class="field min-w-0 text-[11px]" placeholder="رابط صورة القسم"><button onclick="saveCategoryImage('${escapeHtml(c.slug)}')" class="shrink-0 px-3 rounded-xl bg-admin-rose text-white text-[11px] font-bold">حفظ الصورة</button></div>`}
+                </article>`;
             }).join('');
         }
 
@@ -1020,16 +1030,31 @@
         document.getElementById('category-form').addEventListener('submit', async event => {
             event.preventDefault();
             const name = document.getElementById('new-cat-name').value.trim();
+            const imageUrl = document.getElementById('new-cat-image').value.trim();
             let slug = document.getElementById('new-cat-slug').value.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-_]/g, '');
             if (!name) return;
             if (!slug) slug = 'cat-' + Date.now();
             if (categories.some(c => c.slug === slug)) return notify('معرف القسم مستخدم بالفعل');
-            categories.push({ slug, name });
+            if (imageUrl && !isSafeProductImageUrl(imageUrl)) return notify('رابط الصورة يجب أن يبدأ بـ HTTPS');
+            categories.push({ slug, name, imageUrl });
             if (!await persist()) return;
             event.target.reset();
             refreshAll();
             notify('تمت إضافة القسم');
         });
+
+        async function saveCategoryImage(slug) {
+            const input = document.getElementById(`cat-image-${slug}`);
+            if (!input) return;
+            const imageUrl = input.value.trim();
+            if (imageUrl && !isSafeProductImageUrl(imageUrl)) return notify('رابط الصورة يجب أن يبدأ بـ HTTPS');
+            const category = categories.find(c => c.slug === slug);
+            if (!category) return;
+            category.imageUrl = imageUrl;
+            if (!await persist()) return;
+            refreshAll();
+            notify('تم حفظ صورة القسم');
+        }
 
         async function deleteCategory(slug) {
             if (!confirm('هل تريد حذف هذا القسم؟ ستبقى المنتجات بدون هذا التصنيف.')) return;

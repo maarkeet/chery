@@ -32,7 +32,7 @@
                 .eq('active', true)
                 .order('created_at', { ascending: false }),
             client.from('categories')
-                .select('slug,name,sort_order')
+                .select('slug,name,image_url,sort_order')
                 .order('sort_order', { ascending: true }),
             client.from('store_settings')
                 .select('key,value')
@@ -47,6 +47,7 @@
         const categoryNames = new Map(categories.map(category => [category.slug, category.name]));
         categoryNames.set('all', 'الكل');
         window.STORE_CATEGORY_NAMES = categories.map(category => category.name);
+        window.STORE_CATEGORY_IMAGES = Object.fromEntries(categories.map(category => [category.name, category.image_url || '']));
 
         const settings = Object.fromEntries(
             (settingsResult.data || []).map(setting => [setting.key, setting.value])
